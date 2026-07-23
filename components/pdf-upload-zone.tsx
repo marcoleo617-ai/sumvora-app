@@ -1,5 +1,6 @@
 "use client";
 
+import DocumentChat from "./document-chat";
 import DocumentHistoryPanel from "./document-history-panel";
 import HistoryDetailView from "./history-detail-view";
 import MarkdownContent from "./markdown-content";
@@ -9,7 +10,7 @@ import {
   saveHistoryEntry,
   updateSingleHistoryEntry,
 } from "@/lib/document-history";
-import type { HistoryEntry } from "@/lib/document-history-types";
+import type { HistoryEntry, AskSession } from "@/lib/document-history-types";
 import {
   extractPdfDocument,
   type AnalyzedDocument,
@@ -76,8 +77,7 @@ export default function PdfUploadZone() {
   const [question, setQuestion] = useState("");
   const [isAsking, setIsAsking] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
-  const [aiAnswer, setAiAnswer] = useState<string | null>(null);
-  const [aiSources, setAiSources] = useState<AskSource[]>([]);
+  const [chatTurns, setChatTurns] = useState<AskSession[]>([]);
   const [compareFiles, setCompareFiles] = useState<File[]>([]);
   const [compareError, setCompareError] = useState<string | null>(null);
   const [isCompareDragging, setIsCompareDragging] = useState(false);
@@ -148,8 +148,7 @@ export default function PdfUploadZone() {
     setQuestion("");
     setIsAsking(false);
     setAskError(null);
-    setAiAnswer(null);
-    setAiSources([]);
+    setChatTurns([]);
   }, []);
 
   const handleSelectHistory = useCallback((entry: HistoryEntry) => {
@@ -224,6 +223,7 @@ export default function PdfUploadZone() {
     setAnalysisError(null);
     setExtractedText(null);
     setExtractedPages([]);
+    setChatTurns([]);
 
     try {
       const document = await extractPdfDocument(selectedFile);
@@ -307,8 +307,6 @@ export default function PdfUploadZone() {
 
     setIsAsking(true);
     setAskError(null);
-    setAiAnswer(null);
-    setAiSources([]);
 
     try {
       const response = await fetch("/api/ask", {
@@ -339,17 +337,19 @@ export default function PdfUploadZone() {
       }
 
       const sources = Array.isArray(data.sources) ? data.sources : [];
-      setAiAnswer(data.answer);
-      setAiSources(sources);
+      const turn: AskSession = {
+        question: trimmedQuestion,
+        answer: data.answer,
+        sources,
+        askedAt: new Date().toISOString(),
+        responseLanguage,
+      };
+
+      setChatTurns((current) => [...current, turn]);
+      setQuestion("");
 
       if (singleHistoryIdRef.current) {
-        await appendAskSession(singleHistoryIdRef.current, {
-          question: trimmedQuestion,
-          answer: data.answer,
-          sources,
-          askedAt: new Date().toISOString(),
-          responseLanguage,
-        });
+        await appendAskSession(singleHistoryIdRef.current, turn);
         bumpHistoryRefresh();
       }
     } catch (err) {
@@ -838,103 +838,14 @@ export default function PdfUploadZone() {
       )}
 
       {extractedText && (
-        <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Ask your document
-          </h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Ask a question about the content of your PDF.
-          </p>
-
-          <textarea
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            placeholder="What is this document about?"
-            rows={3}
-            disabled={isAsking}
-            className="mt-4 w-full resize-y rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:bg-slate-50"
-          />
-
-          <div className="mt-4 flex flex-col items-start gap-3">
-            <button
-              type="button"
-              onClick={handleAsk}
-              disabled={isAsking || !question.trim()}
-              className="inline-flex h-11 items-center justify-center rounded-lg bg-indigo-600 px-6 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
-            >
-              Ask AI
-            </button>
-
-            {isAsking && (
-              <p
-                className="flex items-center gap-2 text-sm text-slate-600"
-                role="status"
-                aria-live="polite"
-              >
-                <svg
-                  className="h-4 w-4 animate-spin text-indigo-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-                Thinking...
-              </p>
-            )}
-
-            {askError && (
-              <p className="text-sm text-red-600" role="alert" aria-live="polite">
-                {askError}
-              </p>
-            )}
-          </div>
-        </section>
-      )}
-
-      {aiAnswer && (
-        <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">AI Answer</h2>
-          <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
-            {aiAnswer}
-          </div>
-
-          <div className="mt-6 border-t border-slate-100 pt-4">
-            <h3 className="text-sm font-semibold text-slate-900">Sources</h3>
-            {aiSources.length > 0 ? (
-              <ul className="mt-3 space-y-3">
-                {aiSources.map((source) => (
-                  <li
-                    key={`${source.page}-${source.excerpt}`}
-                    className="text-sm leading-relaxed text-slate-600"
-                  >
-                    <span className="font-medium text-slate-700">
-                      Page {source.page}
-                    </span>
-                    <span className="text-slate-400"> — </span>
-                    <span className="italic">&ldquo;{source.excerpt}&rdquo;</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-3 text-sm text-slate-500">
-                No supporting sources were identified in the document.
-              </p>
-            )}
-          </div>
-        </section>
+        <DocumentChat
+          turns={chatTurns}
+          question={question}
+          isAsking={isAsking}
+          askError={askError}
+          onQuestionChange={setQuestion}
+          onAsk={handleAsk}
+        />
       )}
 
       {aiSummary && (
