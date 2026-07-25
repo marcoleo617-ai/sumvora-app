@@ -1,10 +1,12 @@
 "use client";
 
 import MarkdownContent from "./markdown-content";
+import ExportButtons from "./export-buttons";
 import type {
   CompareHistoryEntry,
   SingleHistoryEntry,
 } from "@/lib/document-history-types";
+import { downloadCompareExport, downloadSummaryExport } from "@/lib/export-content";
 import {
   DEFAULT_RESPONSE_LANGUAGE,
   getResponseLanguageLabel,
@@ -86,9 +88,20 @@ export default function HistoryDetailView({
 
           {entry.summary && (
             <div>
-              <h3 className="text-base font-semibold text-slate-900">
-                AI Summary
-              </h3>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <h3 className="text-base font-semibold text-slate-900">
+                  AI Summary
+                </h3>
+                <ExportButtons
+                  onExport={(format) =>
+                    downloadSummaryExport({
+                      summary: entry.summary!,
+                      fileName: entry.fileName,
+                      format,
+                    })
+                  }
+                />
+              </div>
               <div className="mt-4 text-sm leading-7">
                 <MarkdownContent content={entry.summary} />
               </div>
@@ -178,13 +191,26 @@ export default function HistoryDetailView({
             )}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-        >
-          Back
-        </button>
+        <div className="flex flex-col items-stretch gap-3 sm:items-end">
+          {result && (
+            <ExportButtons
+              onExport={(format) =>
+                downloadCompareExport({
+                  result,
+                  documentNames: entry.documents.map((document) => document.name),
+                  format,
+                })
+              }
+            />
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            Back
+          </button>
+        </div>
       </div>
 
       {result ? (

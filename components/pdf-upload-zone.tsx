@@ -2,6 +2,7 @@
 
 import DocumentChat from "./document-chat";
 import DocumentHistoryPanel from "./document-history-panel";
+import ExportButtons from "./export-buttons";
 import HistoryDetailView from "./history-detail-view";
 import MarkdownContent from "./markdown-content";
 import ResponseLanguageSelect from "./response-language-select";
@@ -17,6 +18,7 @@ import {
   type DocumentPage,
 } from "@/lib/extract-pdf-text";
 import type { AskSource, CompareResult } from "@/lib/gemini";
+import { downloadCompareExport, downloadSummaryExport } from "@/lib/export-content";
 import {
   DEFAULT_RESPONSE_LANGUAGE,
   parseResponseLanguage,
@@ -848,9 +850,20 @@ export default function PdfUploadZone() {
         />
       )}
 
-      {aiSummary && (
+      {aiSummary && selectedFile && (
         <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">AI Summary</h2>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <h2 className="text-lg font-semibold text-slate-900">AI Summary</h2>
+            <ExportButtons
+              onExport={(format) =>
+                downloadSummaryExport({
+                  summary: aiSummary,
+                  fileName: selectedFile.name,
+                  format,
+                })
+              }
+            />
+          </div>
           <div className="mt-4 text-sm">
             <MarkdownContent content={aiSummary} />
           </div>
@@ -1065,12 +1078,25 @@ export default function PdfUploadZone() {
 
           {compareResult && (
             <section className="mt-8 w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8 lg:p-10">
-              <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-                Document Comparison
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500 sm:text-base">
-                {compareAnalyzed.map((document) => document.name).join(" vs ")}
-              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+                    Document Comparison
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500 sm:text-base">
+                    {compareAnalyzed.map((document) => document.name).join(" vs ")}
+                  </p>
+                </div>
+                <ExportButtons
+                  onExport={(format) =>
+                    downloadCompareExport({
+                      result: compareResult,
+                      documentNames: compareAnalyzed.map((document) => document.name),
+                      format,
+                    })
+                  }
+                />
+              </div>
 
               <div className="mt-8 w-full space-y-8 border-t border-slate-100 pt-8 sm:space-y-10 sm:pt-10">
                 <div className="w-full rounded-lg border border-slate-100 bg-slate-50/60 p-5 sm:p-6">
