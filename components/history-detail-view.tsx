@@ -45,7 +45,7 @@ export default function HistoryDetailView({
         : entry.text;
 
     return (
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
+      <section className="card mt-6 text-left">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-indigo-600">
@@ -67,7 +67,7 @@ export default function HistoryDetailView({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            className="btn-secondary"
           >
             Back
           </button>
@@ -113,7 +113,7 @@ export default function HistoryDetailView({
               {entry.askSessions.map((session) => (
                 <div
                   key={`${session.askedAt}-${session.question}`}
-                  className="rounded-lg border border-slate-100 p-5"
+                  className="card-muted rounded-xl border border-slate-100 p-5"
                 >
                   <p className="text-xs text-slate-400">
                     {formatDate(session.askedAt)}
@@ -172,7 +172,7 @@ export default function HistoryDetailView({
   const result = entry.compareResult;
 
   return (
-    <section className="mt-6 w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8">
+    <section className="card mt-6 w-full text-left sm:p-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-indigo-600">
@@ -206,7 +206,7 @@ export default function HistoryDetailView({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            className="btn-secondary"
           >
             Back
           </button>
@@ -215,7 +215,7 @@ export default function HistoryDetailView({
 
       {result ? (
         <div className="mt-8 w-full space-y-8 border-t border-slate-100 pt-8">
-          <div className="w-full rounded-lg border border-slate-100 bg-slate-50/60 p-5 sm:p-6">
+          <div className="card-muted w-full">
             <h3 className="text-base font-semibold text-slate-900">
               Executive Summary
             </h3>
@@ -232,7 +232,7 @@ export default function HistoryDetailView({
           ].map(({ title, items }) => (
             <div
               key={title}
-              className="w-full rounded-lg border border-slate-100 p-5 sm:p-6"
+              className="card-muted w-full"
             >
               <h3 className="text-base font-semibold text-slate-900">{title}</h3>
               {items.length > 0 ? (
@@ -249,14 +249,14 @@ export default function HistoryDetailView({
             </div>
           ))}
 
-          <div className="w-full rounded-lg border border-slate-100 p-5 sm:p-6">
+          <div className="card-muted w-full">
             <h3 className="text-base font-semibold text-slate-900">Sources</h3>
             {result.sources.length > 0 ? (
               <ul className="mt-4 space-y-4">
                 {result.sources.map((source) => (
                   <li
                     key={`${source.documentName}-${source.page}-${source.excerpt}`}
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 sm:px-5"
+                    className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-4 shadow-sm sm:px-5"
                   >
                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                       <span className="text-sm font-semibold text-slate-900 sm:text-base">

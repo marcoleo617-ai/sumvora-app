@@ -20,9 +20,9 @@ export default function DocumentChat({
   onAsk,
 }: DocumentChatProps) {
   return (
-    <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">Ask your document</h2>
-      <p className="mt-1 text-sm text-slate-500">
+    <section className="card mt-6 text-left">
+      <h2 className="section-title">Ask your document</h2>
+      <p className="section-subtitle">
         Ask questions about your PDF. Previous questions and answers stay visible
         below.
       </p>
@@ -35,13 +35,13 @@ export default function DocumentChat({
               className="space-y-3"
             >
               <div className="flex justify-end">
-                <div className="max-w-[85%] rounded-2xl rounded-br-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-900">
+                <div className="max-w-[85%] rounded-2xl rounded-br-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm">
                   {turn.question}
                 </div>
               </div>
 
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-indigo-100 bg-indigo-50/60 px-4 py-3">
+                <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-indigo-100 bg-gradient-to-br from-indigo-50/90 to-violet-50/50 px-4 py-3 shadow-sm">
                   <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
                     {turn.answer}
                   </p>
@@ -119,7 +119,7 @@ export default function DocumentChat({
         placeholder="What is this document about?"
         rows={3}
         disabled={isAsking}
-        className="mt-4 w-full resize-y rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:bg-slate-50"
+        className="input-field mt-4 resize-y"
       />
 
       <div className="mt-4 flex flex-col items-start gap-3">
@@ -127,7 +127,7 @@ export default function DocumentChat({
           type="button"
           onClick={onAsk}
           disabled={isAsking || !question.trim()}
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-indigo-600 px-6 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
+          className="btn-primary"
         >
           Ask AI
         </button>

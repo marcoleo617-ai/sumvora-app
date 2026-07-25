@@ -73,9 +73,9 @@ export default function DocumentHistoryPanel({
 
   if (entries.length === 0) {
     return (
-      <section className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">Document Library</h2>
-        <p className="mt-2 text-sm text-slate-500">
+      <section className="card mt-8">
+        <h2 className="section-title">Document Library</h2>
+        <p className="section-subtitle">
           Analyzed documents will appear here automatically.
         </p>
       </section>
@@ -83,13 +83,13 @@ export default function DocumentHistoryPanel({
   }
 
   return (
-    <section className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">Document Library</h2>
-      <p className="mt-1 text-sm text-slate-500">
+    <section className="card mt-8">
+      <h2 className="section-title">Document Library</h2>
+      <p className="section-subtitle">
         Search, filter, and reopen saved analyses read-only.
       </p>
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
         <div className="min-w-0 flex-1 sm:min-w-[220px]">
           <label
             htmlFor="library-search"
@@ -103,7 +103,7 @@ export default function DocumentHistoryPanel({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search by file name..."
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="input-field mt-1 py-2.5"
           />
         </div>
 
@@ -120,7 +120,7 @@ export default function DocumentHistoryPanel({
             onChange={(event) =>
               setTypeFilter(event.target.value as LibraryTypeFilter)
             }
-            className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:w-auto"
+            className="select-field mt-1 w-full sm:w-auto"
           >
             <option value="all">All</option>
             <option value="single">Single</option>
@@ -141,7 +141,7 @@ export default function DocumentHistoryPanel({
             onChange={(event) =>
               setSortOrder(event.target.value as LibrarySortOrder)
             }
-            className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:w-auto"
+            className="select-field mt-1 w-full sm:w-auto"
           >
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
@@ -152,7 +152,7 @@ export default function DocumentHistoryPanel({
       {visibleEntries.length === 0 ? (
         <p className="mt-4 text-sm text-slate-500">No matching documents.</p>
       ) : (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-5 space-y-3">
           {visibleEntries.map((entry) => {
             const isSelected = selectedId === entry.id;
             const title = getEntryTitle(entry);
@@ -161,10 +161,10 @@ export default function DocumentHistoryPanel({
             return (
               <li
                 key={entry.id}
-                className={`rounded-lg border px-4 py-3 transition-colors ${
+                className={`rounded-xl border px-4 py-3 transition-all ${
                   isSelected
-                    ? "border-indigo-300 bg-indigo-50/50"
-                    : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-indigo-300 bg-indigo-50/60 shadow-sm"
+                    : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
                 }`}
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -174,9 +174,7 @@ export default function DocumentHistoryPanel({
                     className="min-w-0 flex-1 text-left"
                   >
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-                        {badge}
-                      </span>
+                      <span className="badge">{badge}</span>
                       <span className="truncate text-sm font-medium text-slate-900 sm:text-base">
                         {title}
                       </span>

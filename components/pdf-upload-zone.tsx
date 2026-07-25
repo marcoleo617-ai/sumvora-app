@@ -226,6 +226,7 @@ export default function PdfUploadZone() {
     setExtractedText(null);
     setExtractedPages([]);
     setChatTurns([]);
+    setAiSummary(null);
 
     try {
       const document = await extractPdfDocument(selectedFile);
@@ -547,15 +548,15 @@ export default function PdfUploadZone() {
   };
 
   const zoneClasses = [
-    "group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 transition-colors sm:py-20",
+    "group dropzone sm:py-20",
     selectedFile && !error
-      ? "border-indigo-300 bg-indigo-50/40 py-12"
+      ? "border-indigo-300 bg-indigo-50/50 py-12 shadow-md ring-1 ring-indigo-100"
       : "py-16",
     error
       ? "border-red-300 bg-red-50/50 hover:border-red-400 hover:bg-red-50/70"
       : isDragging
-        ? "border-indigo-500 bg-indigo-50/50"
-        : "border-slate-300 bg-white hover:border-indigo-400 hover:bg-indigo-50/30",
+        ? "border-indigo-400 bg-indigo-50/70 shadow-md ring-2 ring-indigo-100"
+        : "border-slate-300 bg-white/90 hover:border-indigo-400 hover:bg-indigo-50/40 hover:shadow-md",
   ].join(" ");
 
   const previewText =
@@ -563,16 +564,19 @@ export default function PdfUploadZone() {
       ? `${extractedText.slice(0, PREVIEW_CHAR_LIMIT)}…`
       : extractedText;
 
+  const summaryExportFileName = selectedFile?.name ?? "document.pdf";
+  const hasAiSummary = Boolean(aiSummary?.trim());
+
   const compareZoneClasses = [
-    "group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 transition-colors sm:py-20",
+    "group dropzone w-full sm:py-20",
     compareFiles.length === MAX_COMPARE_FILES && !compareError
-      ? "border-indigo-300 bg-indigo-50/40 py-12"
+      ? "border-indigo-300 bg-indigo-50/50 py-12 shadow-md ring-1 ring-indigo-100"
       : "py-16",
     compareError
       ? "border-red-300 bg-red-50/50 hover:border-red-400 hover:bg-red-50/70"
       : isCompareDragging
-        ? "border-indigo-500 bg-indigo-50/50"
-        : "border-slate-300 bg-white hover:border-indigo-400 hover:bg-indigo-50/30",
+        ? "border-indigo-400 bg-indigo-50/70 shadow-md ring-2 ring-indigo-100"
+        : "border-slate-300 bg-white/90 hover:border-indigo-400 hover:bg-indigo-50/40 hover:shadow-md",
   ].join(" ");
 
   const canCompareDocuments =
@@ -585,14 +589,14 @@ export default function PdfUploadZone() {
 
   return (
     <div className={`mx-auto w-full ${containerWidth}`}>
-      <div className="mb-6 flex rounded-lg border border-slate-200 bg-white p-1">
+      <div className="mb-6 flex rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm">
         <button
           type="button"
           onClick={() => switchMode("single")}
-          className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
             mode === "single"
-              ? "bg-indigo-600 text-white"
-              : "text-slate-600 hover:text-slate-900"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
           }`}
         >
           Single document
@@ -600,10 +604,10 @@ export default function PdfUploadZone() {
         <button
           type="button"
           onClick={() => switchMode("compare")}
-          className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
             mode === "compare"
-              ? "bg-indigo-600 text-white"
-              : "text-slate-600 hover:text-slate-900"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
           }`}
         >
           Compare documents
@@ -624,6 +628,13 @@ export default function PdfUploadZone() {
         />
       ) : mode === "single" ? (
         <>
+      <div className="mb-4">
+        <h2 className="section-title">Upload your PDF</h2>
+        <p className="section-subtitle">
+          Drag and drop a file here or click to browse your device.
+        </p>
+      </div>
+
       <input
         ref={inputRef}
         type="file"
@@ -652,7 +663,7 @@ export default function PdfUploadZone() {
       >
         {selectedFile && !error ? (
           <>
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-100">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 shadow-sm">
               <svg
                 className="h-7 w-7 text-indigo-600"
                 fill="none"
@@ -681,10 +692,10 @@ export default function PdfUploadZone() {
         ) : (
           <>
             <div
-              className={`mb-5 flex h-14 w-14 items-center justify-center rounded-full transition-colors ${
+              className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl transition-colors shadow-sm ${
                 error
                   ? "bg-red-100"
-                  : "bg-slate-100 group-hover:bg-indigo-100"
+                  : "bg-slate-100 group-hover:bg-indigo-50"
               }`}
             >
               <svg
@@ -710,7 +721,11 @@ export default function PdfUploadZone() {
             <p className="text-base font-medium text-slate-700 sm:text-lg">
               Drag &amp; drop your PDF here
             </p>
-            <p className="mt-3 text-sm text-slate-500">or choose a file</p>
+            <p className="mt-3 text-sm text-slate-500">or click to choose a file</p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              <span className="info-chip">PDF only</span>
+              <span className="info-chip">Max 10 MB</span>
+            </div>
           </>
         )}
       </div>
@@ -731,7 +746,7 @@ export default function PdfUploadZone() {
             type="button"
             onClick={handleAnalyze}
             disabled={isAnalyzing}
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-indigo-600 px-6 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
+            className="btn-primary"
           >
             Analyze PDF
           </button>
@@ -779,11 +794,11 @@ export default function PdfUploadZone() {
       )}
 
       {extractedText && previewText && (
-        <section className="mt-8 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="card mt-8 text-left">
+          <h2 className="section-title">
             Document Content
           </h2>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="section-subtitle !mt-1 text-xs text-slate-400">
             Showing the first {PREVIEW_CHAR_LIMIT.toLocaleString()} characters
           </p>
           <pre className="mt-4 max-h-96 overflow-auto whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-slate-700">
@@ -795,7 +810,7 @@ export default function PdfUploadZone() {
               type="button"
               onClick={handleSummarize}
               disabled={isSummarizing}
-              className="inline-flex h-11 items-center justify-center rounded-lg bg-indigo-600 px-6 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
+              className="btn-primary"
             >
               Summarize with AI
             </button>
@@ -836,6 +851,26 @@ export default function PdfUploadZone() {
               </p>
             )}
           </div>
+
+          {hasAiSummary && aiSummary && (
+            <div className="mt-6 border-t border-slate-100 pt-6">
+              <h3 className="section-title">AI Summary</h3>
+              <div className="mt-4 text-sm">
+                <MarkdownContent content={aiSummary} />
+              </div>
+              <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-6">
+                <ExportButtons
+                  onExport={(format) =>
+                    downloadSummaryExport({
+                      summary: aiSummary,
+                      fileName: summaryExportFileName,
+                      format,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          )}
         </section>
       )}
 
@@ -850,29 +885,17 @@ export default function PdfUploadZone() {
         />
       )}
 
-      {aiSummary && selectedFile && (
-        <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">AI Summary</h2>
-            <ExportButtons
-              onExport={(format) =>
-                downloadSummaryExport({
-                  summary: aiSummary,
-                  fileName: selectedFile.name,
-                  format,
-                })
-              }
-            />
-          </div>
-          <div className="mt-4 text-sm">
-            <MarkdownContent content={aiSummary} />
-          </div>
-        </section>
-      )}
         </>
       ) : (
         <>
           <div className="w-full max-w-6xl">
+          <div className="mb-4">
+            <h2 className="section-title">Upload two PDFs</h2>
+            <p className="section-subtitle">
+              Add exactly two documents to generate a structured comparison.
+            </p>
+          </div>
+
           <input
             ref={compareInputRef}
             type="file"
@@ -905,7 +928,7 @@ export default function PdfUploadZone() {
                 {compareFiles.map((file, index) => (
                   <div
                     key={`${file.name}-${file.size}-${index}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-left"
+                  className="card-muted flex items-center justify-between gap-3 px-4 py-3 text-left"
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-slate-900">
@@ -936,7 +959,7 @@ export default function PdfUploadZone() {
               </div>
             ) : (
               <>
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 transition-colors group-hover:bg-indigo-100">
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 shadow-sm transition-colors group-hover:bg-indigo-50">
                   <svg
                     className="h-7 w-7 text-slate-400 transition-colors group-hover:text-indigo-500"
                     fill="none"
@@ -955,7 +978,11 @@ export default function PdfUploadZone() {
                 <p className="text-base font-medium text-slate-700 sm:text-lg">
                   Drag &amp; drop 2 PDFs here
                 </p>
-                <p className="mt-3 text-sm text-slate-500">or choose files</p>
+                <p className="mt-3 text-sm text-slate-500">or click to choose files</p>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                  <span className="info-chip">2 PDFs required</span>
+                  <span className="info-chip">Max 10 MB each</span>
+                </div>
               </>
             )}
           </div>
@@ -976,7 +1003,7 @@ export default function PdfUploadZone() {
                 type="button"
                 onClick={handleCompareAnalyze}
                 disabled={isCompareAnalyzing}
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-indigo-600 px-6 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
+                className="btn-primary"
               >
                 Analyze Documents
               </button>
@@ -1029,7 +1056,7 @@ export default function PdfUploadZone() {
                 type="button"
                 onClick={handleCompareDocuments}
                 disabled={!canCompareDocuments}
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-indigo-600 px-6 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
+                className="btn-primary"
               >
                 Compare Documents
               </button>
@@ -1077,29 +1104,18 @@ export default function PdfUploadZone() {
           )}
 
           {compareResult && (
-            <section className="mt-8 w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8 lg:p-10">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-                    Document Comparison
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500 sm:text-base">
-                    {compareAnalyzed.map((document) => document.name).join(" vs ")}
-                  </p>
-                </div>
-                <ExportButtons
-                  onExport={(format) =>
-                    downloadCompareExport({
-                      result: compareResult,
-                      documentNames: compareAnalyzed.map((document) => document.name),
-                      format,
-                    })
-                  }
-                />
+            <section className="card mt-8 w-full text-left sm:p-8 lg:p-10">
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+                  Document Comparison
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500 sm:text-base">
+                  {compareAnalyzed.map((document) => document.name).join(" vs ")}
+                </p>
               </div>
 
               <div className="mt-8 w-full space-y-8 border-t border-slate-100 pt-8 sm:space-y-10 sm:pt-10">
-                <div className="w-full rounded-lg border border-slate-100 bg-slate-50/60 p-5 sm:p-6">
+                <div className="card-muted w-full">
                   <h3 className="text-base font-semibold text-slate-900">
                     Executive Summary
                   </h3>
@@ -1108,7 +1124,7 @@ export default function PdfUploadZone() {
                   </div>
                 </div>
 
-                <div className="w-full rounded-lg border border-slate-100 p-5 sm:p-6">
+                <div className="card-muted w-full">
                   <h3 className="text-base font-semibold text-slate-900">
                     Similarities
                   </h3>
@@ -1125,7 +1141,7 @@ export default function PdfUploadZone() {
                   )}
                 </div>
 
-                <div className="w-full rounded-lg border border-slate-100 p-5 sm:p-6">
+                <div className="card-muted w-full">
                   <h3 className="text-base font-semibold text-slate-900">
                     Differences
                   </h3>
@@ -1142,7 +1158,7 @@ export default function PdfUploadZone() {
                   )}
                 </div>
 
-                <div className="w-full rounded-lg border border-slate-100 p-5 sm:p-6">
+                <div className="card-muted w-full">
                   <h3 className="text-base font-semibold text-slate-900">
                     Contradictions
                   </h3>
@@ -1159,7 +1175,7 @@ export default function PdfUploadZone() {
                   )}
                 </div>
 
-                <div className="w-full rounded-lg border border-slate-100 p-5 sm:p-6">
+                <div className="card-muted w-full">
                   <h3 className="text-base font-semibold text-slate-900">
                     Key Facts
                   </h3>
@@ -1176,7 +1192,7 @@ export default function PdfUploadZone() {
                   )}
                 </div>
 
-                <div className="w-full rounded-lg border border-slate-100 p-5 sm:p-6">
+                <div className="card-muted w-full">
                   <h3 className="text-base font-semibold text-slate-900">
                     Sources
                   </h3>
@@ -1185,13 +1201,13 @@ export default function PdfUploadZone() {
                       {compareResult.sources.map((source) => (
                         <li
                           key={`${source.documentName}-${source.page}-${source.excerpt}`}
-                          className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 sm:px-5"
+                          className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-4 shadow-sm sm:px-5"
                         >
                           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                             <span className="text-sm font-semibold text-slate-900 sm:text-base">
                               {source.documentName}
                             </span>
-                            <span className="inline-flex w-fit rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 sm:text-sm">
+                            <span className="badge-primary w-fit px-3 py-1 text-xs sm:text-sm">
                               Page {source.page}
                             </span>
                           </div>
@@ -1213,16 +1229,22 @@ export default function PdfUploadZone() {
                   )}
                 </div>
               </div>
+
+              <div className="mt-8 flex flex-col gap-3 border-t border-slate-100 pt-6">
+                <ExportButtons
+                  onExport={(format) =>
+                    downloadCompareExport({
+                      result: compareResult,
+                      documentNames: compareAnalyzed.map((document) => document.name),
+                      format,
+                    })
+                  }
+                />
+              </div>
             </section>
           )}
           </div>
         </>
-      )}
-
-      {!viewingHistoryEntry && (
-        <p className="mt-4 text-center text-xs text-slate-400">
-          PDF files only · Max 10 MB
-        </p>
       )}
 
       <DocumentHistoryPanel

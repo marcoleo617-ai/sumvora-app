@@ -18,10 +18,10 @@ export default function ResponseLanguageSelect({
   disabled = false,
 }: ResponseLanguageSelectProps) {
   return (
-    <div className="mb-6 rounded-lg border border-slate-200 bg-white px-4 py-3">
+    <div className="card mb-6 px-4 py-4">
       <label
         htmlFor="response-language"
-        className="block text-sm font-medium text-slate-700"
+        className="block text-sm font-medium text-slate-800"
       >
         Response language
       </label>
@@ -32,7 +32,7 @@ export default function ResponseLanguageSelect({
         onChange={(event) =>
           onChange(event.target.value as ResponseLanguage)
         }
-        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:bg-slate-50 sm:w-auto"
+        className="select-field mt-2 w-full sm:w-auto"
       >
         {RESPONSE_LANGUAGES.map((language) => (
           <option key={language.code} value={language.code}>
@@ -40,7 +40,7 @@ export default function ResponseLanguageSelect({
           </option>
         ))}
       </select>
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs leading-relaxed text-slate-500">
         AI summaries, answers, and comparisons will be written in this language.
         Source excerpts stay in the original document language.
       </p>
