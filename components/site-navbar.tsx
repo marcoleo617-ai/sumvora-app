@@ -1,3 +1,5 @@
+import AuthNav from "@/components/auth-nav";
+
 const navLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
@@ -40,6 +42,7 @@ export default function SiteNavbar() {
           <a href="#workspace" className="btn-cta-sm ml-1 shrink-0">
             Get started
           </a>
+          <AuthNav />
         </nav>
       </div>
     </header>
