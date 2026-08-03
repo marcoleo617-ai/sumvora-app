@@ -1,10 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import UpgradeToProButton from "@/components/upgrade-to-pro-button";
 import { signOut } from "@/lib/auth/actions";
+import { FREE_MONTHLY_AI_CALLS } from "@/lib/plan-limits";
 import { getCurrentUserProfile } from "@/lib/profile";
+import { getMonthlyAiUsage } from "@/lib/usage";
 
 function formatPlanLabel(plan: string): string {
   return plan === "pro" ? "Pro" : "Free";
+}
+
+function formatUsageLabel(plan: string, aiCalls: number): string {
+  if (plan === "pro") {
+    return "Unlimited";
+  }
+
+  return `${aiCalls} / ${FREE_MONTHLY_AI_CALLS} used`;
 }
 
 export default async function AccountPage() {
@@ -13,6 +24,8 @@ export default async function AccountPage() {
   if (!profile) {
     redirect("/login");
   }
+
+  const aiCalls = await getMonthlyAiUsage(profile.id);
 
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
@@ -50,9 +63,20 @@ export default async function AccountPage() {
                 </span>
               </dd>
             </div>
+            <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                AI usage this month
+              </dt>
+              <dd className="mt-1 text-sm text-slate-900">
+                {formatUsageLabel(profile.plan, aiCalls)}
+              </dd>
+            </div>
           </dl>
 
           <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-6">
+            {profile.plan === "free" && (
+              <UpgradeToProButton email={profile.email} userId={profile.id} />
+            )}
             <Link href="/#workspace" className="btn-secondary text-center">
               Back to workspace
             </Link>

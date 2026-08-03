@@ -1,6 +1,8 @@
 import { askDocument } from "@/lib/gemini";
 import type { DocumentPage } from "@/lib/extract-pdf-text";
 import { parseResponseLanguage } from "@/lib/response-language";
+import { requireAuth } from "@/lib/require-auth";
+import { consumeAiCredit, usageLimitResponse } from "@/lib/usage";
 import { NextResponse } from "next/server";
 
 function parseDocumentPages(value: unknown): DocumentPage[] | null {
@@ -31,6 +33,16 @@ function parseDocumentPages(value: unknown): DocumentPage[] | null {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth();
+  if ("error" in auth) {
+    return auth.error;
+  }
+
+  const credit = await consumeAiCredit(auth.profile.id);
+  if (!credit.allowed) {
+    return NextResponse.json(usageLimitResponse(credit), { status: 429 });
+  }
+
   let body: unknown;
 
   try {

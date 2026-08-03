@@ -1,6 +1,8 @@
 import { compareDocuments } from "@/lib/gemini";
 import type { DocumentPage } from "@/lib/extract-pdf-text";
 import { parseResponseLanguage } from "@/lib/response-language";
+import { requireAuth } from "@/lib/require-auth";
+import { consumeAiCredit, usageLimitResponse } from "@/lib/usage";
 import { NextResponse } from "next/server";
 
 function parseCompareDocuments(value: unknown) {
@@ -60,6 +62,16 @@ function parseCompareDocuments(value: unknown) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth();
+  if ("error" in auth) {
+    return auth.error;
+  }
+
+  const credit = await consumeAiCredit(auth.profile.id);
+  if (!credit.allowed) {
+    return NextResponse.json(usageLimitResponse(credit), { status: 429 });
+  }
+
   let body: unknown;
 
   try {

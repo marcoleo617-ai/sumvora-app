@@ -1,8 +1,20 @@
 import { summarizeDocument } from "@/lib/gemini";
 import { parseResponseLanguage } from "@/lib/response-language";
+import { requireAuth } from "@/lib/require-auth";
+import { consumeAiCredit, usageLimitResponse } from "@/lib/usage";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const auth = await requireAuth();
+  if ("error" in auth) {
+    return auth.error;
+  }
+
+  const credit = await consumeAiCredit(auth.profile.id);
+  if (!credit.allowed) {
+    return NextResponse.json(usageLimitResponse(credit), { status: 429 });
+  }
+
   let body: unknown;
 
   try {
