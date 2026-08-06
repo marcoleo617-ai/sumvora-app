@@ -210,9 +210,27 @@ export function SiteFooter() {
       </div>
 
       <div className="site-footer-divider">
-        <p className="site-footer-copy mx-auto max-w-6xl px-6 py-4 text-center sm:text-left">
-          © 2026 Sumvora · PDF analysis powered by Gemini
-        </p>
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="site-footer-copy text-center sm:text-left">
+            © 2026 Sumvora · PDF analysis powered by Gemini
+          </p>
+          <nav
+            aria-label="Legal"
+            className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-slate-500 sm:justify-end"
+          >
+            <a href="/terms" className="site-footer-link">
+              Terms
+            </a>
+            <span aria-hidden="true">·</span>
+            <a href="/privacy" className="site-footer-link">
+              Privacy
+            </a>
+            <span aria-hidden="true">·</span>
+            <a href="/refund" className="site-footer-link">
+              Refund
+            </a>
+          </nav>
+        </div>
       </div>
     </footer>
   );
