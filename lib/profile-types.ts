@@ -6,4 +6,6 @@ export type UserProfile = {
   plan: UserPlan;
   created_at: string;
   updated_at: string;
+  paddle_customer_id?: string | null;
+  paddle_subscription_id?: string | null;
 };

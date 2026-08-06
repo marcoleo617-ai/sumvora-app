@@ -1,10 +1,14 @@
 import crypto from "crypto";
 
-/** Paddle SDK default replay tolerance. */
-const MAX_SIGNATURE_AGE_MS = 5_000;
+/**
+ * Replay-attack window. Paddle's SDK default is 5s, which is too tight for
+ * Vercel cold starts and webhook retries. Five minutes matches common practice
+ * (and our earlier working tolerance).
+ */
+const MAX_SIGNATURE_AGE_MS = 5 * 60 * 1_000;
 
 export type PaddleSignatureVerificationResult =
-  | { ok: true }
+  | { ok: true; timestamp: string }
   | { ok: false; error: string };
 
 function parsePaddleSignatureHeader(signatureHeader: string): {
@@ -118,5 +122,5 @@ export function verifyPaddleWebhookSignature(
     };
   }
 
-  return { ok: true };
+  return { ok: true, timestamp: parsed.timestamp };
 }

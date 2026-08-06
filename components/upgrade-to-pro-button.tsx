@@ -24,12 +24,20 @@ export default function UpgradeToProButton({
       return;
     }
 
+    // Paddle customData values must be strings. Both user_id and user_email
+    // are included so webhooks can resolve the Sumvora account reliably.
+    const customData: Record<string, string> = {
+      user_id: userId,
+    };
+
+    if (email) {
+      customData.user_email = email;
+    }
+
     paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       ...(email ? { customer: { email } } : {}),
-      customData: {
-        user_id: userId,
-      },
+      customData,
     });
   };
 
