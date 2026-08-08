@@ -41,6 +41,8 @@ export function getPaddle(): Promise<Paddle | undefined> {
     return paddlePromise;
   }
 
+  // LIVE tokens use environment "production"; sandbox tokens use "sandbox".
+  // Only the public client-side token is used here — never API/webhook secrets.
   paddlePromise = initializePaddle({
     environment,
     token,

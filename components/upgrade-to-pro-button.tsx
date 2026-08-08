@@ -1,6 +1,10 @@
 "use client";
 
 import { usePaddle } from "@/hooks/use-paddle";
+import {
+  getCheckoutSuccessUrl,
+  SUMVORA_PRO_PRICE_ID,
+} from "@/lib/paddle/config";
 
 type UpgradeToProButtonProps = {
   email: string | null;
@@ -12,20 +16,18 @@ export default function UpgradeToProButton({
   userId,
 }: UpgradeToProButtonProps) {
   const paddle = usePaddle();
-  const priceId = process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID;
 
   const handleUpgrade = () => {
     if (!paddle) {
       return;
     }
 
-    if (!priceId) {
-      console.warn("NEXT_PUBLIC_PADDLE_PRO_PRICE_ID is not set.");
+    if (!SUMVORA_PRO_PRICE_ID) {
+      console.warn("Sumvora Pro Paddle price ID is not configured.");
       return;
     }
 
-    // Paddle customData values must be strings. Both user_id and user_email
-    // are included so webhooks can resolve the Sumvora account reliably.
+    // customData values must be strings so webhooks can map the buyer to Supabase.
     const customData: Record<string, string> = {
       user_id: userId,
     };
@@ -35,13 +37,18 @@ export default function UpgradeToProButton({
     }
 
     paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
+      settings: {
+        displayMode: "overlay",
+        theme: "light",
+        successUrl: getCheckoutSuccessUrl(),
+      },
+      items: [{ priceId: SUMVORA_PRO_PRICE_ID, quantity: 1 }],
       ...(email ? { customer: { email } } : {}),
       customData,
     });
   };
 
-  const isDisabled = !paddle || !priceId;
+  const isDisabled = !paddle || !SUMVORA_PRO_PRICE_ID;
 
   return (
     <button
