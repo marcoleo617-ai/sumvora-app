@@ -1,17 +1,19 @@
+import Link from "next/link";
 import AuthNav from "@/components/auth-nav";
 
 const navLinks = [
-  { href: "#features", label: "Features" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#why-sumvora", label: "Why Sumvora" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#why-sumvora", label: "Why Sumvora" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export default function SiteNavbar() {
   return (
     <header className="site-navbar">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-6">
-        <a href="#" className="group flex items-center gap-3">
+        <Link href="/" className="group flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-md transition-shadow duration-200 group-hover:shadow-lg">
             <svg
               className="h-4.5 w-4.5 text-white"
@@ -31,20 +33,21 @@ export default function SiteNavbar() {
           <span className="text-lg font-semibold tracking-[-0.02em] text-slate-900">
             Sumvora
           </span>
-        </a>
+        </Link>
 
         <nav className="flex max-w-full items-center gap-1 overflow-x-auto sm:gap-2">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="nav-link">
+            <Link key={link.href} href={link.href} className="nav-link">
               {link.label}
-            </a>
+            </Link>
           ))}
-          <a href="#workspace" className="btn-cta-sm ml-1 shrink-0">
+          <Link href="/#workspace" className="btn-cta-sm ml-1 shrink-0">
             Get started
-          </a>
+          </Link>
           <AuthNav />
         </nav>
       </div>
     </header>
   );
 }
+

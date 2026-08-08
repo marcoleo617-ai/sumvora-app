@@ -194,16 +194,19 @@ export function SiteFooter() {
         </div>
 
         <div className="flex flex-wrap gap-5">
-          <a href="#features" className="site-footer-link">
+          <a href="/#features" className="site-footer-link">
             Features
           </a>
-          <a href="#how-it-works" className="site-footer-link">
+          <a href="/#how-it-works" className="site-footer-link">
             How it works
           </a>
-          <a href="#faq" className="site-footer-link">
+          <a href="/pricing" className="site-footer-link">
+            Pricing
+          </a>
+          <a href="/#faq" className="site-footer-link">
             FAQ
           </a>
-          <a href="#workspace" className="site-footer-link">
+          <a href="/#workspace" className="site-footer-link">
             Workspace
           </a>
         </div>
