@@ -206,6 +206,9 @@ export function SiteFooter() {
           <a href="/#faq" className="site-footer-link">
             FAQ
           </a>
+          <a href="/support" className="site-footer-link">
+            Support
+          </a>
           <a href="/#workspace" className="site-footer-link">
             Workspace
           </a>

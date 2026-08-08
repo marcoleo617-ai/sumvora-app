@@ -1,2 +1,2 @@
-/** Temporary public support contact until a verified address is configured. */
-export const SUPPORT_EMAIL = "support@sumvora.app";
+/** Public Sumvora support contact email. */
+export const SUPPORT_EMAIL = "sumvorasupport@gmail.com";

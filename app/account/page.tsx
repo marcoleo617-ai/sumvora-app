@@ -85,6 +85,15 @@ export default async function AccountPage() {
                 Sign out
               </button>
             </form>
+            <p className="pt-1 text-center text-sm text-slate-500">
+              Need help?{" "}
+              <Link
+                href="/support"
+                className="font-medium text-indigo-600 hover:text-indigo-700"
+              >
+                Contact Support
+              </Link>
+            </p>
           </div>
         </div>
       </main>
