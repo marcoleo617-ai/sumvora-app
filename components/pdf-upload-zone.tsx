@@ -633,6 +633,16 @@ export default function PdfUploadZone() {
         <p className="section-subtitle">
           Drag and drop a file here or click to browse your device.
         </p>
+        <p className="mt-2 text-xs leading-relaxed text-slate-500">
+          🔒 Privacy-first document handling • No cloud PDF archive
+          {" · "}
+          <a
+            href="/privacy"
+            className="font-medium text-indigo-600 hover:text-indigo-700"
+          >
+            Learn about Privacy &amp; Security
+          </a>
+        </p>
       </div>
 
       <input

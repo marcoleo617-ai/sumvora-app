@@ -2,6 +2,7 @@ import PdfUploadZone from "@/components/pdf-upload-zone";
 import {
   FaqSection,
   HowItWorksSection,
+  PrivacySecuritySection,
   SiteFooter,
   WhySumvoraSection,
 } from "@/components/marketing-sections";
@@ -182,6 +183,7 @@ export default function Home() {
 
       <HowItWorksSection />
       <WhySumvoraSection />
+      <PrivacySecuritySection />
       <FaqSection />
       <SiteFooter />
     </div>

@@ -146,6 +146,108 @@ export function WhySumvoraSection() {
   );
 }
 
+const privacyTrustPoints = [
+  {
+    title: "Local document handling",
+    description:
+      "Uploaded PDF files are handled locally and are not stored in a Sumvora cloud document archive.",
+    icon: (
+      <svg
+        className="h-5 w-5 text-indigo-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.8}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "Private by design",
+    description:
+      "Your documents and analysis are isolated from other Sumvora users.",
+    icon: (
+      <svg
+        className="h-5 w-5 text-indigo-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.8}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "AI only when requested",
+    description:
+      "Document content is sent to our AI processing provider only when required to perform the analysis or answer you request.",
+    icon: (
+      <svg
+        className="h-5 w-5 text-indigo-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.8}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+        />
+      </svg>
+    ),
+  },
+];
+
+export function PrivacySecuritySection() {
+  return (
+    <section id="privacy-security" className="section-band section-band-light">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="section-heading">
+          <span className="section-kicker">Privacy &amp; Security</span>
+          <h2 className="section-title-lg">Your documents. Your privacy.</h2>
+          <p className="section-lead">
+            Sumvora is designed to analyze your documents without building a
+            cloud archive of your files.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-5">
+          {privacyTrustPoints.map((item) => (
+            <article key={item.title} className="feature-card">
+              <div className="feature-icon-wrap">{item.icon}</div>
+              <h3 className="feature-card-title mt-4">{item.title}</h3>
+              <p className="feature-card-body">{item.description}</p>
+            </article>
+          ))}
+        </div>
+
+        <p className="mt-8 text-center text-sm text-slate-500">
+          <a
+            href="/privacy"
+            className="font-medium text-indigo-600 hover:text-indigo-700"
+          >
+            Learn about Privacy &amp; Security
+          </a>
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export function FaqSection() {
   return (
     <section id="faq" className="section-band section-band-clean">
