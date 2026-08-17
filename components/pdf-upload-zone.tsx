@@ -927,6 +927,7 @@ export default function PdfUploadZone() {
           preparedTemplateTitle={
             getSmartTemplate(selectedTemplateId)?.title ?? null
           }
+          documentFileName={summaryExportFileName}
           onQuestionChange={(value) => {
             setQuestion(value);
             // Editing the prompt keeps the custom-question workflow; clear highlight

@@ -6,7 +6,7 @@ import type {
   CompareHistoryEntry,
   SingleHistoryEntry,
 } from "@/lib/document-history-types";
-import { downloadCompareExport, downloadSummaryExport } from "@/lib/export-content";
+import { downloadAskExport, downloadCompareExport, downloadSummaryExport } from "@/lib/export-content";
 import {
   DEFAULT_RESPONSE_LANGUAGE,
   getResponseLanguageLabel,
@@ -97,6 +97,7 @@ export default function HistoryDetailView({
                     downloadSummaryExport({
                       summary: entry.summary!,
                       fileName: entry.fileName,
+                      generatedAt: entry.analyzedAt,
                       format,
                     })
                   }
@@ -133,6 +134,20 @@ export default function HistoryDetailView({
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-700">
                     {session.answer}
                   </p>
+                  <div className="mt-4 flex justify-end">
+                    <ExportButtons
+                      onExport={(format) =>
+                        downloadAskExport({
+                          question: session.question,
+                          answer: session.answer,
+                          sources: session.sources,
+                          fileName: entry.fileName,
+                          generatedAt: session.askedAt,
+                          format,
+                        })
+                      }
+                    />
+                  </div>
                   <div className="mt-4 border-t border-slate-100 pt-4">
                     <h4 className="text-sm font-semibold text-slate-900">
                       Sources
@@ -198,6 +213,7 @@ export default function HistoryDetailView({
                 downloadCompareExport({
                   result,
                   documentNames: entry.documents.map((document) => document.name),
+                  generatedAt: entry.analyzedAt,
                   format,
                 })
               }

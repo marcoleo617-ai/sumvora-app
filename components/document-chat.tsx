@@ -1,6 +1,8 @@
 "use client";
 
+import ExportButtons from "./export-buttons";
 import type { AskSession } from "@/lib/document-history-types";
+import { downloadAskExport } from "@/lib/export-content";
 
 type DocumentChatProps = {
   turns: AskSession[];
@@ -8,6 +10,7 @@ type DocumentChatProps = {
   isAsking: boolean;
   askError: string | null;
   preparedTemplateTitle?: string | null;
+  documentFileName?: string;
   onQuestionChange: (value: string) => void;
   onAsk: () => void;
 };
@@ -18,6 +21,7 @@ export default function DocumentChat({
   isAsking,
   askError,
   preparedTemplateTitle = null,
+  documentFileName = "document.pdf",
   onQuestionChange,
   onAsk,
 }: DocumentChatProps) {
@@ -82,6 +86,20 @@ export default function DocumentChat({
                         No supporting sources were identified in the document.
                       </p>
                     )}
+                  </div>
+                  <div className="mt-4 flex justify-end border-t border-indigo-100/80 pt-3">
+                    <ExportButtons
+                      onExport={(format) =>
+                        downloadAskExport({
+                          question: turn.question,
+                          answer: turn.answer,
+                          sources: turn.sources,
+                          fileName: documentFileName,
+                          generatedAt: turn.askedAt,
+                          format,
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>
