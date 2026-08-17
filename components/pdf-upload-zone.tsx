@@ -6,6 +6,7 @@ import ExportButtons from "./export-buttons";
 import HistoryDetailView from "./history-detail-view";
 import MarkdownContent from "./markdown-content";
 import ResponseLanguageSelect from "./response-language-select";
+import SmartTemplates from "./smart-templates";
 import {
   appendAskSession,
   saveHistoryEntry,
@@ -25,6 +26,10 @@ import {
   RESPONSE_LANGUAGE_STORAGE_KEY,
   type ResponseLanguage,
 } from "@/lib/response-language";
+import {
+  getSmartTemplate,
+  type SmartTemplateId,
+} from "@/lib/smart-templates";
 import { useCallback, useRef, useState } from "react";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -77,6 +82,8 @@ export default function PdfUploadZone() {
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
+  const [selectedTemplateId, setSelectedTemplateId] =
+    useState<SmartTemplateId | null>(null);
   const [isAsking, setIsAsking] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
   const [chatTurns, setChatTurns] = useState<AskSession[]>([]);
@@ -138,6 +145,24 @@ export default function PdfUploadZone() {
     setCompareResult(null);
   }, []);
 
+  const applySelectedTemplatePrompt = useCallback(
+    (templateId: SmartTemplateId | null) => {
+      const template = getSmartTemplate(templateId);
+      setQuestion(template?.prompt ?? "");
+    },
+    [],
+  );
+
+  const handleSelectTemplate = useCallback(
+    (templateId: SmartTemplateId | null) => {
+      // Selection only prepares a prompt — never calls AI endpoints.
+      setSelectedTemplateId(templateId);
+      applySelectedTemplatePrompt(templateId);
+      setAskError(null);
+    },
+    [applySelectedTemplatePrompt],
+  );
+
   const resetAnalysis = useCallback(() => {
     singleHistoryIdRef.current = null;
     setIsAnalyzing(false);
@@ -183,14 +208,17 @@ export default function PdfUploadZone() {
         setError(validationError);
         setSelectedFile(null);
         resetAnalysis();
+        applySelectedTemplatePrompt(selectedTemplateId);
         return;
       }
 
       setError(null);
       setSelectedFile(file);
       resetAnalysis();
+      // Keep prepared Quick Action ready after a new upload.
+      applySelectedTemplatePrompt(selectedTemplateId);
     },
-    [resetAnalysis],
+    [resetAnalysis, applySelectedTemplatePrompt, selectedTemplateId],
   );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -349,7 +377,7 @@ export default function PdfUploadZone() {
       };
 
       setChatTurns((current) => [...current, turn]);
-      setQuestion("");
+      applySelectedTemplatePrompt(selectedTemplateId);
 
       if (singleHistoryIdRef.current) {
         await appendAskSession(singleHistoryIdRef.current, turn);
@@ -375,6 +403,7 @@ export default function PdfUploadZone() {
     } else {
       setError(null);
       setSelectedFile(null);
+      setSelectedTemplateId(null);
       resetAnalysis();
     }
   };
@@ -628,6 +657,11 @@ export default function PdfUploadZone() {
         />
       ) : mode === "single" ? (
         <>
+      <SmartTemplates
+        selectedId={selectedTemplateId}
+        onSelect={handleSelectTemplate}
+      />
+
       <div className="mb-4">
         <h2 className="section-title">Upload your PDF</h2>
         <p className="section-subtitle">
@@ -890,7 +924,18 @@ export default function PdfUploadZone() {
           question={question}
           isAsking={isAsking}
           askError={askError}
-          onQuestionChange={setQuestion}
+          preparedTemplateTitle={
+            getSmartTemplate(selectedTemplateId)?.title ?? null
+          }
+          onQuestionChange={(value) => {
+            setQuestion(value);
+            // Editing the prompt keeps the custom-question workflow; clear highlight
+            // only when the text no longer matches the selected template.
+            const template = getSmartTemplate(selectedTemplateId);
+            if (template && value.trim() !== template.prompt.trim()) {
+              setSelectedTemplateId(null);
+            }
+          }}
           onAsk={handleAsk}
         />
       )}

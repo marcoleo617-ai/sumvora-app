@@ -7,6 +7,7 @@ type DocumentChatProps = {
   question: string;
   isAsking: boolean;
   askError: string | null;
+  preparedTemplateTitle?: string | null;
   onQuestionChange: (value: string) => void;
   onAsk: () => void;
 };
@@ -16,6 +17,7 @@ export default function DocumentChat({
   question,
   isAsking,
   askError,
+  preparedTemplateTitle = null,
   onQuestionChange,
   onAsk,
 }: DocumentChatProps) {
@@ -26,6 +28,15 @@ export default function DocumentChat({
         Ask questions about your PDF. Previous questions and answers stay visible
         below.
       </p>
+
+      {preparedTemplateTitle && (
+        <p className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/70 px-3.5 py-2.5 text-xs leading-relaxed text-indigo-800">
+          Prepared action:{" "}
+          <span className="font-semibold">{preparedTemplateTitle}</span>. Review
+          or edit the prompt, then click Ask AI — no credit is used until you
+          send the request.
+        </p>
+      )}
 
       {turns.length > 0 ? (
         <ul className="mt-6 space-y-4">
@@ -79,7 +90,9 @@ export default function DocumentChat({
         </ul>
       ) : (
         <p className="mt-6 text-sm text-slate-500">
-          Ask your first question about this document.
+          {preparedTemplateTitle
+            ? "Your Quick Action is ready below. You can also type a custom question instead."
+            : "Ask your first question about this document."}
         </p>
       )}
 
