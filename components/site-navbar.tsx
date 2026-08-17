@@ -2,9 +2,10 @@ import Link from "next/link";
 import AuthNav from "@/components/auth-nav";
 
 const navLinks = [
-  { href: "/#features", label: "Features" },
+  { href: "/#features", label: "Capabilities" },
+  { href: "/#use-cases", label: "Use cases" },
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#why-sumvora", label: "Why Sumvora" },
+  { href: "/#privacy-security", label: "Privacy" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ];
@@ -12,8 +13,8 @@ const navLinks = [
 export default function SiteNavbar() {
   return (
     <header className="site-navbar">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-6">
-        <Link href="/" className="group flex items-center gap-3">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6">
+        <Link href="/" className="group flex shrink-0 items-center gap-2.5 sm:gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-md transition-shadow duration-200 group-hover:shadow-lg">
             <svg
               className="h-4.5 w-4.5 text-white"
@@ -35,19 +36,20 @@ export default function SiteNavbar() {
           </span>
         </Link>
 
-        <nav className="flex max-w-full items-center gap-1 overflow-x-auto sm:gap-2">
+        <nav className="flex min-w-0 max-w-full items-center gap-0.5 overflow-x-auto sm:gap-1.5">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="nav-link">
+            <Link key={link.href} href={link.href} className="nav-link shrink-0">
               {link.label}
             </Link>
           ))}
           <Link href="/#workspace" className="btn-cta-sm ml-1 shrink-0">
             Get started
           </Link>
-          <AuthNav />
+          <div className="shrink-0">
+            <AuthNav />
+          </div>
         </nav>
       </div>
     </header>
   );
 }
-
